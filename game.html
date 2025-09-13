@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Spin Game</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial Rounded MT Bold', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      width: 800px;
+      height: 1280px;
+      overflow: hidden;
+      background: url('back2.png') no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      touch-action: manipulation;
+    }
+    
+    /* Game container - no frames */
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    /* Screen - no frames */
+    .screen {
+      width: 100%;
+      height: 280px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 80px;
+    }
+    
+    .reel {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      transition: top 0.1s linear;
+    }
+    
+    .reel img {
+      display: block;
+      width: 90%;
+      height: 280px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+    
+    /* Spin button - no frames */
+    .spin-btn {
+      width: 190px;
+      height: 140px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+    }
+    
+    .spin-btn:hover {
+      transform: scale(1.08);
+    }
+    
+    .spin-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .spin-btn:disabled {
+      background: transparent;
+      cursor: not-allowed;
+      transform: scale(0.95);
+    }
+    
+    /* Popup message - no frames */
+    .popup-page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-start;
+      text-align: center;
+      color: white;
+      z-index: 10;
+      padding-top: 100px;
+    }
+    
+    .popup-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 110%;
+    }
+    
+    /* Title section - no frames */
+    .title-section {
+      margin-bottom: 30px;
+      align-items: center;
+    }
+    
+    .popup-title {
+      font-size: 4.5rem;
+      color: gold;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+      margin: 0;
+      text-align: center;
+    }
+    
+    /* Image section - no frames */
+    .image-section {
+      margin-bottom: 30px;
+      align-items: center;
+    }
+    
+    .popup-image {
+      width: 250px;
+      height: 250px;
+      background: no-repeat center center/contain;
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+      text-align: center;
+    }
+    
+    /* Message section - no frames */
+    .message-section {
+      margin-bottom: 30px;
+      align-items: center;
+    }
+    
+    .popup-message {
+      font-size: 2.7rem;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+      margin: 0;
+      align-items: center;
+      font-weight: bold;
+    }
+    
+    .countdown {
+      font-size: 1.5rem;
+      color: #ffcc00;
+      margin-top: 20px;
+      text-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    }
+    
+    /* Spacer elements */
+    .spacer {
+      height: 50px;
+      width: 100%;
+    }
+    
+    /* Star effect */
+    .star {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: url('star.png') no-repeat center center/contain;
+      opacity: 0;
+      animation: starTwinkle 2s ease-in-out infinite;
+      z-index: 5;
+    }
+    
+    @keyframes starTwinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(180deg);
+      }
+    }
+    
+    /* Fade out animation */
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <!-- Game Container - No Frames -->
+  <div class="game-container" id="game-container">
+    <!-- Screen - No Frames -->
+    <div class="screen">
+      <div class="reel" id="reel">
+        <img src="can.png" alt="Can ">
+        <img src="can2.png" alt="Can 2">
+        <img src="can3.png" alt="Can 3">
+        <img src="can4.png" alt="Can 4">
+        <img src="voucher.png" alt="Voucher">
+        <img src="bangal.png" alt="Bangal">
+        <img src="Ticket.png" alt="Ticket">
+        
+        <img src="try.png" alt="Try Again">
+      </div>
+    </div>
+ <br>
+    <!-- Spin button - No Frames -->
+    <button class="spin-btn" id="spinBtn"></button>
+  </div>
+
+  <!-- Popup Message - No Frames -->
+  <div id="popup-page" class="popup-page">
+    <div class="popup-content">
+      <!-- Added spacers to push content down -->
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <br><br><br><br><br><br><br><br>
+      <!-- Title Section - No Frames -->
+      <div class="title-section">
+        <h1 class="popup-title" id="popup-title"></h1>
+      </div>
+      <br><br><br>
+      <!-- Image Section - No Frames -->
+      <div class="image-section">
+        <div class="popup-image" id="popup-image"></div>
+      </div>
+      <br><br><br><br><br><br>
+      <!-- Message Section - No Frames -->
+      <div class="message-section">
+        <p class="popup-message" id="popup-message"></p>
+      </div>
+      
+      <div class="countdown" id="countdown"></div>
+    </div>
+  </div>
+
+  <script>
+    // Image data with custom messages, prize values, probabilities, and redirect pages
+    const imageData = [
+      {
+        src: "",
+        alt: "Can",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: true,
+        weight: 40,
+        redirectPage: "can.html"
+      },
+      {
+        src: "",
+        alt: "Can 2",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: true,
+        weight: 40,
+        redirectPage: "can2.html"
+      },
+      {
+        src: "",
+        alt: "Can 3",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: true,
+        weight: 40,
+        redirectPage: "can3.html"
+      },
+      {
+        src: "",
+        alt: "Can 4",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: true,
+        weight: 40,
+        redirectPage: "can4.html"
+      },
+      {
+        src: "",
+        alt: "Voucher",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: true,
+        weight: 3,
+        redirectPage: "voucher.html"
+      },
+      {
+        src: "",
+        alt: "Bangal",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: false,
+        weight: 50,
+        redirectPage: "bangal.html"
+      },
+      {
+        src: "",
+        alt: "Ticket",
+        message: "",
+        title: "",
+        prizeValue: 1000,
+        isWin: false,
+        weight: 5,
+        redirectPage: "ticket.html"
+      },
+      {
+        src: "",
+        alt: "Try Again",
+        message: "",
+        title: "",
+        prizeValue: 0,
+        isWin: false,
+        weight: 25,
+        redirectPage: "try.html"
+      }
+    ];
+
+    // Function to select a random index based on weights
+    function getWeightedRandomIndex() {
+      // Calculate total weight
+      const totalWeight = imageData.reduce((sum, item) => sum + item.weight, 0);
+      
+      // Generate a random number between 0 and totalWeight
+      const random = Math.random() * totalWeight;
+      
+      // Find the index where the cumulative weight exceeds the random number
+      let weightSum = 0;
+      for (let i = 0; i < imageData.length; i++) {
+        weightSum += imageData[i].weight;
+        if (random <= weightSum) {
+          return i;
+        }
+      }
+      
+      // Fallback to last index if something goes wrong
+      return imageData.length - 1;
+    }
+
+    let countdownInterval;
+    
+    function showPopupPage(winnerIndex) {
+      const resultData = imageData[winnerIndex];
+      const popupPage = document.getElementById('popup-page');
+      const popupTitle = document.getElementById('popup-title');
+      const popupImage = document.getElementById('popup-image');
+      const popupMessage = document.getElementById('popup-message');
+      const countdown = document.getElementById('countdown');
+      
+      popupTitle.textContent = resultData.title;
+      popupImage.style.backgroundImage = `url(${resultData.src})`;
+      popupMessage.textContent = resultData.message;
+      
+      if (resultData.isWin) {
+        createStars();
+      }
+      
+      popupPage.style.display = 'flex';
+      
+      // Start countdown for redirect
+      let seconds = 3;
+      countdown.textContent = ` ${seconds}`;
+      
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        seconds--;
+        countdown.textContent = ` ${seconds} `;
+        
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = resultData.redirectPage;
+        }
+      }, 100);
+    }
+    
+    function hideGameElements() {
+      const gameContainer = document.getElementById('game-container');
+      gameContainer.classList.add('fade-out');
+      
+      // Remove elements after fade out animation completes
+      setTimeout(() => {
+        gameContainer.style.display = 'none';
+      }, 500);
+    }
+    
+    function resetReel() {
+      const reel = document.getElementById('reel');
+      reel.style.transition = 'none';
+      reel.style.top = "0px";
+      // Force reflow
+      void reel.offsetWidth;
+      reel.style.transition = 'top 0.1s linear';
+    }
+    
+    // Star effect for wins
+    function createStars() {
+      const container = document.getElementById('popup-page');
+      
+      // Clear any existing stars
+      const existingStars = document.querySelectorAll('.star');
+      existingStars.forEach(el => el.remove());
+      
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.animationDelay = Math.random() * 2 + 's';
+        star.style.width = (20 + Math.random() * 30) + 'px';
+        star.style.height = (20 + Math.random() * 30) + 'px';
+        container.appendChild(star);
+      }
+    }
+    
+    // Slot machine functionality
+    const reel = document.getElementById('reel');
+    const spinBtn = document.getElementById('spinBtn');
+    
+    const itemCount = 8; // 8 images
+    const itemHeight = 280; // same as .screen height
+    let spinning = false;
+    let spinInterval;
+    
+    function startSpin() {
+      if (spinning) return;
+      spinning = true;
+      spinBtn.disabled = true;
+      
+      // Use weighted random selection instead of uniform random
+      const winnerIndex = getWeightedRandomIndex();
+      const stopPosition = -winnerIndex * itemHeight;
+      
+      let elapsedTime = 0;
+      const totalSpinTime = 5000; // 5 seconds
+      let position = 0;
+      let speed = 200; // Very fast initial speed
+      
+      // Function to update the spin
+      function updateSpin() {
+        elapsedTime += 50;
+        const timeLeft = Math.max(0, totalSpinTime - elapsedTime);
+        
+        // Gradually slow down (more dramatic slowing)
+        if (timeLeft > 2000) {
+          // First 3 seconds: very fast spinning
+          speed = 180 + 20 * Math.sin(elapsedTime/100);
+        } else {
+          // Last 2 seconds: slow down dramatically
+          speed = 5 + 175 * (timeLeft / 2000);
+        }
+        
+        position -= speed;
+        if (position <= -(itemHeight * itemCount)) {
+          position = 0;
+        }
+        reel.style.top = position + "px";
+        
+        // If we've reached the spin time, stop at the determined position
+        if (elapsedTime >= totalSpinTime) {
+          clearInterval(spinInterval);
+          reel.style.top = stopPosition + "px";
+          
+          // Show the final image for a moment, then hide game elements
+          setTimeout(() => {
+            spinning = false;
+            spinBtn.disabled = false;
+            
+            // Hide game elements (spin button and display)
+            hideGameElements();
+            
+            // Show popup page after 2 seconds
+            setTimeout(() => {
+              showPopupPage(winnerIndex);
+            }, 100);
+          }, 500);
+        }
+      }
+      
+      // Start the spin
+      spinInterval = setInterval(updateSpin, 50);
+    }
+    
+    // Add click event to spin button
+    spinBtn.addEventListener('click', startSpin);
+    
+    // Add touch event to entire body for one-touch spin
+    document.body.addEventListener('touchstart', function(e) {
+      if (!spinning) {
+        e.preventDefault();
+        startSpin();
+      }
+    });
+    
+    // Add click event to entire body for one-click spin (for testing on desktop)
+    document.body.addEventListener('click', function(e) {
+      if (!spinning && e.target === document.body) {
+        startSpin();
+      }
+    });
+  </script>
+</body>
+</html>

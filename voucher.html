@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 800px;
+            height: 1280px;
+            background: url('vo.png') no-repeat center center;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Redirect after 5 seconds
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 8000);
+        
+        // Allow immediate redirect on click/tap
+        document.body.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+        
+        document.body.addEventListener('touchstart', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
